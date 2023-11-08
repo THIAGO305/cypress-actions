@@ -8,8 +8,11 @@ on:
         default: cypress/e2e/*
 
 jobs:
-  cypress-e2e-electron-:
+  cypress-e2e-electron:
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node18.12.0-chrome103-ff107
+      options: --user 1001
     steps: 
       - name: Get code
         uses: actions/checkout@v4.1.1
@@ -25,5 +28,45 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ec4200e9-4b91-4ebc-9327-066bc98f897a
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  cypress-e2e-chrome:
+    needs: cypress-e2e-electron
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node18.12.0-chrome103-ff107
+      options: --user 1001
+    steps: 
+      - name: Get code
+        uses: actions/checkout@v4.1.1
 
-        
+      - name: Cypress run
+        uses: cypress-io/github-action@v6.5.0
+        with:
+          intall-command: yarn intall
+          browser: chrome
+          record: true
+          group: UI Chrome
+          spec: ${{ github.event.inputs.spec }}
+        env:
+          CYPRESS_RECORD_KEY: ec4200e9-4b91-4ebc-9327-066bc98f897a
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  cypress-e2e-firefox:
+    needs: cypress-e2e-electron
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node18.12.0-chrome103-ff107
+      options: --user 1001
+    steps: 
+      - name: Get code
+        uses: actions/checkout@v4.1.1
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6.5.0
+        with:
+          intall-command: yarn intall
+          browser: firefox
+          record: true
+          group: UI Firefox
+          spec: ${{ github.event.inputs.spec }}
+        env:
+          CYPRESS_RECORD_KEY: ec4200e9-4b91-4ebc-9327-066bc98f897a
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
